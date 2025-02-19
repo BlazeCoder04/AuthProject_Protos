@@ -3,19 +3,15 @@ syntax = "proto3";
 package auth;
 
 import "google/protobuf/timestamp.proto";
+import "users/users.proto";
 
-option go_package = "github.com/BlazeCoder04/AuthProject_Protos;auth";
+option go_package = "github.com/BlazeCoder04/AuthProject_Protos/auth";
 
 service Auth {
     rpc Login(LoginRequest) returns (LoginResponse);
     rpc Register(RegisterRequest) returns (RegisterResponse);
     rpc GetNewToken(GetNewTokenRequest) returns (GetNewTokenResponse);
     rpc Logout(LogoutRequest) returns (LogoutResponse);
-}
-
-enum UserRole {
-    USER = 0;
-    ADMIN = 1;
 }
 
 message LoginRequest {
@@ -40,7 +36,7 @@ message RegisterData {
     string id = 1;
     string email = 2;
     string name = 3;
-    UserRole role = 4;
+    users.UserRole role = 4;
     google.protobuf.Timestamp created_at = 5;
     google.protobuf.Timestamp updated_at = 6;
 }

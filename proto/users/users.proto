@@ -1,0 +1,98 @@
+syntax = "proto3";
+
+package users;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/BlazeCoder04/AuthProject_Protos/users";
+
+service Users {
+    rpc GetProfile(GetProfileRequest) returns (UserResponse);
+    rpc GetAllUsers(GetAllUsersRequest) returns (GetAllUsersResponse);
+    rpc ChangeEmail(ChangeEmailRequest) returns (ChangeEmailResponse);
+    rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse);
+    rpc ChangeName(ChangeNameRequest) returns (ChangeNameResponse);
+    rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
+}
+
+enum UserRole {
+    USER = 0;
+    ADMIN = 1;
+}
+
+message FullUserResponse {
+    string id = 1;
+    string email = 2;
+    string name = 3;
+    UserRole role = 4;
+    google.protobuf.Timestamp created_at = 5;
+    google.protobuf.Timestamp updated_at = 6;
+    google.protobuf.Timestamp deleted_at = 7;
+}
+
+message UserResponse {
+    string id = 1;
+    string email = 2;
+    string name = 3;
+    UserRole role = 4;
+    google.protobuf.Timestamp created_at = 5;
+    google.protobuf.Timestamp updated_at = 6;
+}
+
+message GetProfileRequest {
+    string user_id = 1;
+}
+
+message GetAllUsersRequest {
+    string user_id = 1;
+}
+
+message GetAllUsersResponse {
+    string status = 1;
+    int64 count = 2;
+    repeated FullUserResponse users = 3;
+}
+
+message ChangeEmailRequest {
+    string user_id = 1;
+    string new_email = 2;
+    string password = 3;
+}
+
+message ChangeEmailResponse {
+    string status = 1;
+    UserResponse user = 2;
+}
+
+message ChangePasswordRequest {
+    string user_id = 1;
+    string email = 2;
+    string password = 3;
+    string new_password = 4;
+}
+
+message ChangePasswordResponse {
+    string status = 1;
+    UserResponse user = 2;
+}
+
+message ChangeNameRequest {
+    string user_id = 1;
+    string password = 2;
+    string new_name = 3;
+}
+
+message ChangeNameResponse {
+    string status = 1;
+    UserResponse user = 2;
+}
+
+message DeleteUserRequest {
+    string user_id = 1;
+    string password = 2;
+}
+
+message DeleteUserResponse {
+    string status = 1;
+    string message = 2;
+}
