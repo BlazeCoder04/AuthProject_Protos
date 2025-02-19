@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package auth;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/BlazeCoder04/auht-protos;auth";
+
+service Auth {
+    rpc Login(LoginRequest) returns (LoginResponse);
+    rpc Register(RegisterRequest) returns (RegisterResponse);
+    rpc GetNewToken(google.protobuf.Empty) returns (GetNewTokenResponse);
+}
+
+enum UserRole {
+    ROLE_USER = 0;
+    ROLE_ADMIN = 1;
+}
+
+message LoginRequest {
+    string email = 1;
+    string password = 2;
+}
+
+message LoginResponse {
+    string status = 1;
+    string access_token = 2;
+    string refresh_token = 3;
+}
+
+message RegisterRequest {
+    string email = 1;
+    string password = 2;
+    string confirm_password = 3;
+    string name = 4;
+}
+
+message RegisterData {
+    string id = 1;
+    string email = 2;
+    string name = 3;
+    UserRole role = 4;
+    google.protobuf.Timestamp created_at = 5;
+    google.protobuf.Timestamp updated_at = 6;
+}
+
+message RegisterResponse {
+    string status = 1;
+    string access_token = 2;
+    string refresh_token = 3;
+    RegisterData data = 4;
+}
+
+message GetNewTokenResponse {
+    string status = 1;
+    string access_token = 2;
+}
