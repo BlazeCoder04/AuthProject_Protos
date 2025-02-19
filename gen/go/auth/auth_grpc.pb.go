@@ -11,7 +11,6 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -23,6 +22,7 @@ const (
 	Auth_Login_FullMethodName       = "/auth.Auth/Login"
 	Auth_Register_FullMethodName    = "/auth.Auth/Register"
 	Auth_GetNewToken_FullMethodName = "/auth.Auth/GetNewToken"
+	Auth_Logout_FullMethodName      = "/auth.Auth/Logout"
 )
 
 // AuthClient is the client API for Auth service.
@@ -31,7 +31,8 @@ const (
 type AuthClient interface {
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
-	GetNewToken(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetNewTokenResponse, error)
+	GetNewToken(ctx context.Context, in *GetNewTokenRequest, opts ...grpc.CallOption) (*GetNewTokenResponse, error)
+	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error)
 }
 
 type authClient struct {
@@ -62,10 +63,20 @@ func (c *authClient) Register(ctx context.Context, in *RegisterRequest, opts ...
 	return out, nil
 }
 
-func (c *authClient) GetNewToken(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetNewTokenResponse, error) {
+func (c *authClient) GetNewToken(ctx context.Context, in *GetNewTokenRequest, opts ...grpc.CallOption) (*GetNewTokenResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetNewTokenResponse)
 	err := c.cc.Invoke(ctx, Auth_GetNewToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authClient) Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LogoutResponse)
+	err := c.cc.Invoke(ctx, Auth_Logout_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +89,8 @@ func (c *authClient) GetNewToken(ctx context.Context, in *emptypb.Empty, opts ..
 type AuthServer interface {
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
-	GetNewToken(context.Context, *emptypb.Empty) (*GetNewTokenResponse, error)
+	GetNewToken(context.Context, *GetNewTokenRequest) (*GetNewTokenResponse, error)
+	Logout(context.Context, *LogoutRequest) (*LogoutResponse, error)
 	mustEmbedUnimplementedAuthServer()
 }
 
@@ -95,8 +107,11 @@ func (UnimplementedAuthServer) Login(context.Context, *LoginRequest) (*LoginResp
 func (UnimplementedAuthServer) Register(context.Context, *RegisterRequest) (*RegisterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
 }
-func (UnimplementedAuthServer) GetNewToken(context.Context, *emptypb.Empty) (*GetNewTokenResponse, error) {
+func (UnimplementedAuthServer) GetNewToken(context.Context, *GetNewTokenRequest) (*GetNewTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetNewToken not implemented")
+}
+func (UnimplementedAuthServer) Logout(context.Context, *LogoutRequest) (*LogoutResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
 }
 func (UnimplementedAuthServer) mustEmbedUnimplementedAuthServer() {}
 func (UnimplementedAuthServer) testEmbeddedByValue()              {}
@@ -156,7 +171,7 @@ func _Auth_Register_Handler(srv interface{}, ctx context.Context, dec func(inter
 }
 
 func _Auth_GetNewToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(GetNewTokenRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -168,7 +183,25 @@ func _Auth_GetNewToken_Handler(srv interface{}, ctx context.Context, dec func(in
 		FullMethod: Auth_GetNewToken_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServer).GetNewToken(ctx, req.(*emptypb.Empty))
+		return srv.(AuthServer).GetNewToken(ctx, req.(*GetNewTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Auth_Logout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LogoutRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).Logout(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Auth_Logout_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).Logout(ctx, req.(*LogoutRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -191,6 +224,10 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetNewToken",
 			Handler:    _Auth_GetNewToken_Handler,
+		},
+		{
+			MethodName: "Logout",
+			Handler:    _Auth_Logout_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
