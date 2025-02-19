@@ -3,14 +3,14 @@ syntax = "proto3";
 package auth;
 
 import "google/protobuf/timestamp.proto";
-import "google/protobuf/empty.proto";
 
-option go_package = "github.com/BlazeCoder04/auht-protos;auth";
+option go_package = "github.com/BlazeCoder04/AuthProject_Protos;auth";
 
 service Auth {
     rpc Login(LoginRequest) returns (LoginResponse);
     rpc Register(RegisterRequest) returns (RegisterResponse);
-    rpc GetNewToken(google.protobuf.Empty) returns (GetNewTokenResponse);
+    rpc GetNewToken(GetNewTokenRequest) returns (GetNewTokenResponse);
+    rpc Logout(LogoutRequest) returns (LogoutResponse);
 }
 
 enum UserRole {
@@ -52,7 +52,20 @@ message RegisterResponse {
     RegisterData data = 4;
 }
 
+message GetNewTokenRequest {
+    string user_id = 1;
+}
+
 message GetNewTokenResponse {
     string status = 1;
     string access_token = 2;
+}
+
+message LogoutRequest {
+    string user_id = 1;
+}
+
+message LogoutResponse {
+    string status = 1;
+    string message = 2;
 }
